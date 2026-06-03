@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brain Tumor AI Diagnostic System</title>
+  <meta name="description"
+    content="Explainable Deep Learning Framework for Brain Tumor Classification and Segmentation using MRI" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ════════════════ NAVIGATION BAR ════════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#upload" class="nav-logo">
+        <div class="logo-glow"></div>
+        <svg class="logo-svg" viewBox="0 0 44 44" fill="none">
+          <circle cx="22" cy="22" r="20" stroke="url(#navGrad)" stroke-width="2" />
+          <path d="M13 22c0-5 4-9 9-9s9 4 9 9" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" />
+          <circle cx="22" cy="22" r="4.5" fill="#00d4ff" opacity="0.85" />
+          <path d="M9 24c2.5-1.2 4.5 1 7 0s4.5-3.2 7-2 4.5 2 7 1 4.5-1 7 0" stroke="#4fc3f7" stroke-width="1.5"
+            stroke-linecap="round" opacity="0.6" />
+          <defs>
+            <linearGradient id="navGrad" x1="0" y1="0" x2="44" y2="44">
+              <stop stop-color="#00d4ff" />
+              <stop offset="1" stop-color="#0055cc" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="logo-text">
+          <span class="logo-title">Brain Tumor AI</span>
+          <span class="logo-sub">Diagnostic System</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="#upload" class="nav-link active" data-page="upload">
+          <span class="nav-icon">📤</span> Upload
+        </a>
+        <a href="#results" class="nav-link" data-page="results" id="navResults">
+          <span class="nav-icon">🔬</span> Results
+        </a>
+        <a href="#history" class="nav-link" data-page="history">
+          <span class="nav-icon">🕓</span> History
+          <span class="nav-count" id="historyCount" style="display:none">0</span>
+        </a>
+      </div>
+      <div class="nav-status">
+        <div class="status-pills">
+          <span class="pill pill-blue">ResNet-50</span>
+          <span class="pill pill-teal">U-Net</span>
+          <span class="pill pill-purple">Grad-CAM</span>
+        </div>
+        <span class="status-dot" id="statusDot">
+          <span class="dot"></span>
+          <span class="dot-label" id="statusLabel">Connecting...</span>
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ════════════════ PAGE: UPLOAD ════════════════ -->
+  <div class="page active" id="page-upload">
+    <div class="page-container">
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-bg-effect"></div>
+        <h1 class="hero-title">
+          <span class="hero-accent">Explainable</span> Deep Learning
+          <br />for Brain Tumor Analysis
+        </h1>
+        <p class="hero-sub">
+          Upload an MRI scan for AI-powered classification, Grad-CAM explainability, and U-Net segmentation
+        </p>
+        <div class="hero-chips">
+          <span class="chip">🧠 CNN Classification</span>
+          <span class="chip">🎯 Grad-CAM XAI</span>
+          <span class="chip">🔬 U-Net Segmentation</span>
+          <span class="chip">📊 MC Dropout Uncertainty</span>
+        </div>
+      </div>
+
+      <!-- Upload Grid -->
+      <div class="upload-grid">
+        <!-- Upload Card -->
+        <div class="card upload-card" id="uploadCard">
+          <div class="card-head">
+            <div class="card-icon-wrap"><span>📤</span></div>
+            <div>
+              <h2 class="card-title">Upload MRI Scan</h2>
+              <p class="card-desc">PNG, JPG, or JPEG format</p>
+            </div>
+          </div>
+
+          <div class="drop-zone" id="dropZone">
+            <div class="drop-icon-wrap">
+              <svg viewBox="0 0 72 72" fill="none">
+                <circle cx="36" cy="36" r="34" stroke="#00d4ff" stroke-width="2" stroke-dasharray="8 5" opacity="0.5" />
+                <path d="M36 22v20M28 30l8-8 8 8" stroke="#00d4ff" stroke-width="2.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <rect x="22" y="48" width="28" height="4" rx="2" fill="#00d4ff" opacity="0.25" />
+              </svg>
+            </div>
+            <p class="drop-main-text">Drag &amp; drop your MRI scan here</p>
+            <p class="drop-sub-text">or click to browse files</p>
+            <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg" hidden />
+            <button class="btn btn-outline" id="browseBtn">Browse Files</button>
+          </div>
+
+          <div class="file-row" id="fileRow" style="display:none">
+            <span class="file-icon">🖼️</span>
+            <div class="file-details">
+              <span class="file-name" id="fileName"></span>
+              <span class="file-size" id="fileSize"></span>
+            </div>
+            <button class="btn-x" id="removeFile" title="Remove">✕</button>
+          </div>
+
+          <button class="btn btn-predict" id="predictBtn" disabled>
+            <span class="btn-predict-inner">
+              <span id="predictLabel">🧠 Predict &amp; Analyze</span>
+              <svg class="btn-arrow" viewBox="0 0 20 20" fill="none">
+                <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+          </button>
+        </div>
+
+        <!-- Preview Card -->
+        <div class="card preview-card">
+          <div class="card-head">
+            <div class="card-icon-wrap"><span>🔬</span></div>
+            <div>
+              <h2 class="card-title">Image Preview</h2>
+              <p class="card-desc" id="previewDesc">No image loaded</p>
+            </div>
+          </div>
+          <div class="preview-viewport" id="previewViewport">
+            <div class="preview-placeholder" id="previewPlaceholder">
+              <div class="scan-anim">
+                <div class="ring r1"></div>
+                <div class="ring r2"></div>
+                <div class="ring r3"></div>
+                <div class="scan-core"></div>
+              </div>
+              <p>Awaiting MRI upload</p>
+            </div>
+            <img id="previewImg" src="" alt="MRI Preview" style="display:none" />
+          </div>
+          <div class="preview-info" id="previewInfo" style="display:none">
+            <span id="imgDim">—</span>
+            <span class="info-sep">·</span>
+            <span id="imgFormat">—</span>
+            <span class="info-sep">·</span>
+            <span id="imgSize">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ LOADING OVERLAY ════════════════ -->
+  <div class="loading-overlay" id="loadingOverlay" style="display:none">
+    <div class="loading-modal">
+      <div class="loader-spinner"></div>
+      <h3 class="loading-title">Analyzing MRI Scan</h3>
+      <p class="loading-sub">Running deep learning pipeline...</p>
+      <div class="loading-steps">
+        <div class="lstep active" id="ls1"><span class="lstep-dot"></span> Preprocessing input image</div>
+        <div class="lstep" id="ls2"><span class="lstep-dot"></span> ResNet-50 classification</div>
+        <div class="lstep" id="ls3"><span class="lstep-dot"></span> MC Dropout uncertainty estimation</div>
+        <div class="lstep" id="ls4"><span class="lstep-dot"></span> Grad-CAM heatmap generation</div>
+        <div class="lstep" id="ls5"><span class="lstep-dot"></span> U-Net segmentation</div>
+        <div class="lstep" id="ls6"><span class="lstep-dot"></span> Computing evaluation metrics</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ PAGE: RESULTS ════════════════ -->
+  <div class="page" id="page-results">
+    <div class="page-container">
+      <!-- Top bar -->
+      <div class="results-topbar">
+        <div>
+          <h1 class="results-title">Diagnostic Results</h1>
+          <p class="results-sub" id="resultFileName">—</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-outline" id="btnNewScan">📤 New Scan</button>
+          <button class="btn btn-outline btn-purple" id="btnDownloadPDF">📄 Download Report</button>
+        </div>
+      </div>
+
+      <!-- Prediction + Scores + Toggles -->
+      <div class="results-top-grid">
+        <!-- Prediction -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-icon-wrap"><span>🎯</span></div>
+            <h2 class="card-title">Classification</h2>
+          </div>
+          <div class="pred-hero">
+            <div class="pred-badge" id="predBadge">—</div>
+            <p class="pred-subtitle" id="predSubtitle">Awaiting analysis</p>
+          </div>
+          <div class="stat-bars">
+            <div class="stat-row">
+              <span class="stat-label">Confidence</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-cyan" id="confBar"></div>
+              </div>
+              <span class="stat-val mono" id="confVal">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Uncertainty (MC)</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-warn" id="uncBar"></div>
+              </div>
+              <span class="stat-val mono" id="uncVal">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Class Probs -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-icon-wrap"><span>📊</span></div>
+            <h2 class="card-title">Class Probabilities</h2>
+          </div>
+          <div class="class-list" id="classList"></div>
+        </div>
+
+        <!-- Toggles + Actions -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-icon-wrap"><span>⚙️</span></div>
+            <h2 class="card-title">Display Options</h2>
+          </div>
+          <div class="toggle-list">
+            <label class="toggle-row">
+              <span>Show Explainability (Grad-CAM)</span>
+              <div class="tswitch"><input type="checkbox" id="togGradcam" checked /><span class="tslider"></span></div>
+            </label>
+            <label class="toggle-row">
+              <span>Show Segmentation (U-Net)</span>
+              <div class="tswitch"><input type="checkbox" id="togSeg" checked /><span class="tslider"></span></div>
+            </label>
+            <label class="toggle-row">
+              <span>Show Metrics Dashboard</span>
+              <div class="tswitch"><input type="checkbox" id="togMetrics" checked /><span class="tslider"></span></div>
+            </label>
+          </div>
+          <div class="card-footer-info">
+            <span class="mono small" id="resultTimestamp">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visualization Panel -->
+      <div class="card vis-card" id="visCard">
+        <div class="card-head">
+          <div class="card-icon-wrap"><span>🖼️</span></div>
+          <h2 class="card-title">Visualization Panel</h2>
+          <span class="card-pill">XAI · Grad-CAM · U-Net</span>
+        </div>
+        <div class="vis-grid">
+          <div class="vis-panel">
+            <div class="vis-tag">Original MRI</div>
+            <div class="vis-frame"><img id="visOriginal" src="" alt="Original" /></div>
+            <p class="vis-caption">Preprocessed input scan (256×256)</p>
+          </div>
+          <div class="vis-panel" id="panelGradcam">
+            <div class="vis-tag tag-warm">Grad-CAM Heatmap</div>
+            <div class="vis-frame">
+              <img id="visGradcam" src="" alt="Grad-CAM" />
+              <div class="vis-legend heat-legend">
+                <span>Low</span>
+                <div class="legend-bar heat-bar"></div>
+                <span>High</span>
+              </div>
+            </div>
+            <p class="vis-caption">Class activation map — discriminative regions</p>
+          </div>
+          <div class="vis-panel" id="panelSeg">
+            <div class="vis-tag tag-green">Segmentation Mask</div>
+            <div class="vis-frame">
+              <img id="visSeg" src="" alt="Segmentation" />
+              <div class="vis-legend seg-legend">
+                <span class="seg-chip"><span class="seg-dot" style="background:#00d2ff"></span>Tumor Core</span>
+                <span class="seg-chip"><span class="seg-dot" style="background:#ff6432"></span>Enhancing</span>
+                <span class="seg-chip"><span class="seg-dot" style="background:#64dc64"></span>Edema</span>
+              </div>
+            </div>
+            <p class="vis-caption">U-Net pixel-wise semantic segmentation</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metrics Dashboard -->
+      <div class="card metrics-card" id="metricsCard">
+        <div class="card-head">
+          <div class="card-icon-wrap"><span>📈</span></div>
+          <h2 class="card-title">Evaluation Metrics Dashboard</h2>
+          <span class="card-pill">ResNet-50 + U-Net</span>
+        </div>
+        <div class="metrics-grid" id="metricsGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ PAGE: HISTORY ════════════════ -->
+  <div class="page" id="page-history">
+    <div class="page-container">
+      <div class="history-header">
+        <div>
+          <h1 class="results-title">Prediction History</h1>
+          <p class="results-sub">Review and revisit previous diagnostic analyses</p>
+        </div>
+        <button class="btn btn-outline btn-red" id="clearAllHistory">🗑️ Clear All</button>
+      </div>
+      <div class="history-grid" id="historyGrid">
+        <div class="history-empty" id="historyEmpty">
+          <div class="empty-icon">📋</div>
+          <h3>No predictions yet</h3>
+          <p>Upload an MRI scan and run analysis to build your prediction history.</p>
+          <a href="#upload" class="btn btn-outline">Upload MRI Scan</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ FOOTER ════════════════ -->
+  <footer class="footer">
+    <span>Brain Tumor AI Diagnostic System · Explainable Deep Learning Framework</span>
+    <span>ResNet-50 · U-Net · MC Dropout · Grad-CAM</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

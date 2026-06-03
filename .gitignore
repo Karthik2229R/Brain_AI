@@ -1,0 +1,5 @@
+node_modules/
+.venv/
+Dataset/
+backend/__pycache__/
+backend/artifacts/
